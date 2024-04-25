@@ -76,6 +76,8 @@ void createMagicPacket(unsigned char packet[], unsigned int macAddress[]){
 int main(int argc, const char* argv[]){
 	// Default broadcast address
 	char broadcastAddress[] = "255.255.255.255";
+	// Default port
+	unsigned int port = 9;
 	// Packet buffer
 	unsigned char packet[102];
 	// Mac address
@@ -123,6 +125,16 @@ int main(int argc, const char* argv[]){
 	}
 	printf("Broadcast address %s will be used.\n", broadcastAddress);
 
+	// Check if a port was given too
+	if(argc > 3){
+		// Parse port
+		i = sscanf(argv[3],"%i", &i);
+		if(i == 1){
+			port = atoi(argv[3]);
+		}
+	}
+	printf("Port %i will be used.\n", port);
+
 	// Create Magic Packet
 	createMagicPacket(packet, mac);
 
@@ -153,7 +165,7 @@ int main(int argc, const char* argv[]){
 		// Set server end point (the broadcast addres)
 		udpServer.sin_family = AF_INET;
 		udpServer.sin_addr.s_addr = inet_addr(broadcastAddress);
-		udpServer.sin_port = htons(9);
+		udpServer.sin_port = htons(port);
 
 		// Send the packet
 		int result = sendto(udpSocket, &packet, sizeof(unsigned char) * 102, 0, (struct sockaddr*) &udpServer, sizeof(udpServer));
@@ -183,7 +195,7 @@ int main(int argc, const char* argv[]){
 		// Set server end point (the broadcast addres)
 		udpServer.sin_family = AF_INET;
 		udpServer.sin_addr.s_addr = inet_addr(broadcastAddress);
-		udpServer.sin_port = htons(9);
+		udpServer.sin_port = htons(port);
 
 		// Send the packet
 		sendto(udpSocket, (char*)&packet, sizeof(unsigned char) * 102, 0, (struct sockaddr*) &udpServer, sizeof(udpServer));
